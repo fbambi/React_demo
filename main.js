@@ -120,6 +120,7 @@ var Menu = React.createClass({
       //   console.log(element.name,element.markedUnselected?'marked':'unmarked');
       // });
       this.setState({
+<<<<<<< HEAD
         dishes:this.state.dishes
       });
     },
@@ -147,12 +148,19 @@ var Menu = React.createClass({
       this.props.submitOrders({
         sum:sum,
         finished:false
+=======
+        'dishes':this.state.dishes
+>>>>>>> 5aee51f4ff43936bce0b8dde07cd508de685eed8
       });
     },
 
     render: function() {
       var that=this;
+<<<<<<< HEAD
 
+=======
+      console.log('render');
+>>>>>>> 5aee51f4ff43936bce0b8dde07cd508de685eed8
 
         var unselectedDishesArr = this.state.dishes.map(function(dishes,index) {
           if(dishes.selected){
@@ -184,7 +192,10 @@ var Menu = React.createClass({
               <button onClick={this.addSelectedDishes}>add</button>
               <button onClick={this.removeSelectedDishes}>remove</button>
               <ul style={ulStyle}>{selectedDishesArr}</ul>
+<<<<<<< HEAD
               <button onClick={this.submitOrders}>submit</button>
+=======
+>>>>>>> 5aee51f4ff43936bce0b8dde07cd508de685eed8
               </div>
               ;
 
@@ -196,6 +207,7 @@ var Menu = React.createClass({
 });
 
 
+<<<<<<< HEAD
 var Counter=React.createClass({
   getInitialState:function(){
     return {
@@ -231,6 +243,8 @@ var Counter=React.createClass({
 });
 
 
+=======
+>>>>>>> 5aee51f4ff43936bce0b8dde07cd508de685eed8
 
 
 
@@ -238,6 +252,7 @@ var Counter=React.createClass({
 var Hall = React.createClass({
 
   getInitialState: function() {
+<<<<<<< HEAD
     return {
       orders:[]
     };
@@ -251,13 +266,21 @@ submitOrders:function(obj){
     orders:this.state.orders
   });
 },
+=======
+    return {hall: 1};
+  },
+>>>>>>> 5aee51f4ff43936bce0b8dde07cd508de685eed8
 
   render: function() {
 
     return <div>
           <span>hall</span>
+<<<<<<< HEAD
           <Menu submitOrders={this.submitOrders.bind(this)} />
           <Counter orders={this.state.orders} />
+=======
+          <Menu />
+>>>>>>> 5aee51f4ff43936bce0b8dde07cd508de685eed8
           </div>
     ;
   }
