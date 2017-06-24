@@ -1,6 +1,8 @@
 //
 //
 
+
+
 var liItemStyle={
   display:"block",
   cursor:"pointer"
@@ -271,8 +273,8 @@ var Counter=React.createClass({
 
   render:function(){
 
-    var orders=this.state.orders||this.props.orders;
-    this.state.orders=orders;
+    var orders=this.state.orders=this.props.orders;
+
 
     window.orders=orders;
 
@@ -319,7 +321,15 @@ var Hall = React.createClass({
 
   getInitialState: function() {
     return {
-      orders:[]
+      orders:[
+        {sum:170,finished:false},
+        {sum:266,finished:true},
+        {sum:60,finished:true},
+        {sum:120,finished:false},
+        {sum:240,finished:true},
+        {sum:546,finished:false},
+
+      ]
     };
   },
 
@@ -336,9 +346,10 @@ var Hall = React.createClass({
   render: function() {
 
     return <div>
-          <span>hall</span>
+          <span style={{fontSize:"24px"}}>hall</span>
           <Menu receiveOrders={this.receiveOrders.bind(this)} />
           <Counter orders={this.state.orders} />
+
           </div>
     ;
   }
@@ -359,7 +370,7 @@ var Kitchen = React.createClass({
   render: function() {
 
     var that=this;
-    var orders=this.state.orders=window.orders;
+    var orders=this.state.orders=window.orders||[];
     console.log(orders);
 
     var unfinishedOrders = orders.map(function(order,index){
@@ -373,7 +384,7 @@ var Kitchen = React.createClass({
     });
 
     return <div>
-            <span>kitchen</span>
+            <span style={{fontSize:"24px"}}>kitchen</span>
             {unfinishedOrders}
             </div>
     ;
@@ -382,13 +393,53 @@ var Kitchen = React.createClass({
 });
 
 
-ReactDOM.render(
-  <Hall />,
-  document.getElementById('hall')
-);
+var Router = ReactRouter;
+   var Route = Router.Route;
+   var Link = Router.Link;
+   var RouteHandler = Router.RouteHandler;
 
 
-ReactDOM.render(
-  <Kitchen />,
-  document.getElementById('kitchen')
-);
+    var App = React.createClass({
+        render : function(){
+                return (
+                    <div>
+                        <h1>App</h1>
+                        <Link to="/hall">Hall</Link>
+                        <br/>
+                        <Link to="/kitchen">Kitchen</Link>
+                        <RouteHandler/>
+
+                    </div>
+                );
+            }
+        });
+
+
+
+
+var routes=
+  <Route path="/" handler={App}>
+           <Route path="hall" handler={Hall}/>
+           <Route path="kitchen" handler={Kitchen}/>
+       </Route>
+;
+
+Router.run(routes, function (Handler) {
+        ReactDOM.render(<Handler/>, document.body);
+    });
+
+// Router.run(routes,function(root){
+//   React.render(<Root />,document.body);
+// });
+
+
+// ReactDOM.render(
+//   <Hall />,
+//   document.getElementById('hall')
+// );
+//
+//
+// ReactDOM.render(
+//   <Kitchen />,
+//   document.getElementById('kitchen')
+// );
