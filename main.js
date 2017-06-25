@@ -227,11 +227,12 @@ var Counter = React.createClass({
 
     render: function() {
 
-        var orders = this.state.orders = this.props.orders;
+        var orders = store.getState().orders;
 
-        window.orders = orders;
+        console.log('render counter');
+        console.log(orders);
 
-        orders = orders.map(function(order) {
+        var ordersArr = orders.map(function(order) {
             return (
                 <ul style={{
                     display: "block",
@@ -267,7 +268,7 @@ var Counter = React.createClass({
                     <li style={sortStyle} onClick={this.sortStatusFinished}>finished</li>
                     <li style={sortStyle} onClick={this.sortStatusUnfinished}>unfinished</li>
                 </ul>
-                {orders}
+                {ordersArr}
             </div>
         );
 
@@ -277,35 +278,43 @@ var Counter = React.createClass({
 var Hall = React.createClass({
 
     getInitialState: function() {
-        return {
-            orders: [
-                {
-                    sum: 170,
-                    finished: false
-                }, {
-                    sum: 266,
-                    finished: true
-                }, {
-                    sum: 60,
-                    finished: true
-                }, {
-                    sum: 120,
-                    finished: false
-                }, {
-                    sum: 240,
-                    finished: true
-                }, {
-                    sum: 546,
-                    finished: false
-                }
-            ]
-        };
+        var originalOrders = [
+            {
+                sum: 170,
+                finished: false
+            }, {
+                sum: 266,
+                finished: true
+            }, {
+                sum: 60,
+                finished: true
+            }, {
+                sum: 120,
+                finished: false
+            }, {
+                sum: 240,
+                finished: true
+            }, {
+                sum: 546,
+                finished: false
+            }
+        ];
+
+        originalOrders = store.getState()
+            ? store.getState().orders
+            : originalOrders;
+
+        store.dispatch(addOrderUpdate(originalOrders));
+
+        return {orders: originalOrders};
     },
 
     receiveOrders: function(obj) {
+
         this.state.orders.unshift(obj);
         this.setState({orders: this.state.orders});
         store.dispatch(addOrderUpdate(this.state.orders));
+
     },
 
     render: function() {
@@ -334,18 +343,27 @@ var Hall = React.createClass({
 
 var Kitchen = React.createClass({
     getInitialState: function() {
-        return {kitchen: 1}
+        var originalOrders = store.getState();
+
+        if ((!originalOrders) || originalOrders.orders.length === 0) {
+            return {orders: []}
+        }
+
+        return {orders: originalOrders.orders}
+
     },
 
     handleCooking: function(index) {
-        orders[index].finished = true;
-        this.setState({orders: this.state.orders});
-    },
-    render: function() {
 
+        this.state.orders[index].finished = true;
+        store.dispatch(addOrderUpdate(this.state.orders));
+        this.setState({orders: this.state.orders});
+        console.log('from kitchen', store.getState().orders);
+    },
+
+    render: function() {
         var that = this;
-        var orders = this.state.orders = window.orders || [];
-        console.log(orders);
+        var orders = this.state.orders;
 
         if (orders.length === 0) {
             return (
@@ -418,9 +436,9 @@ function updateOrders(state = initialState, action) {
 
     switch (action.type) {
         case 'update':
-            return Object.assign({}, {
-                orders: action.orders
-            });
+            return {
+                orders: [...action.orders]
+            }
     }
 }
 
@@ -428,16 +446,10 @@ function updateOrders(state = initialState, action) {
 var store = Redux.createStore(updateOrders);
 
 var unsubscribe = store.subscribe(function() {
-    console.log(store.getState())
+    console.log('subscribe', store.getState().orders);
 });
 
-store.dispatch(addOrderUpdate({sum: 211, finished: false}));
-store.dispatch(addOrderUpdate({sum: 985, finished: true}));
-
-
 var Provider = ReactRedux.Provider;
-console.log(ReactRedux);
-console.log(Provider);
 
 // ReactDOM.render(
 //     <Provider store={store}>
@@ -454,7 +466,7 @@ var routes = <Route path="/" handler={Restaurant}>
 Router.run(routes, function(Handler, routerState) {
     ReactDOM.render(
         <Provider store={store}>
-        <Handler routerState={routerState}/>
+        <Handler routerState={routerState} store={store}/>
     </Provider>, document.body);
 });
 
