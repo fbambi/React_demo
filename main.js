@@ -1,6 +1,14 @@
-//
-//
+/*
 
+        counstructor
+
+  Hall            Kitchen
+  --Menu          --kitchen
+  --Counter
+
+*/
+
+/*********Style Start*********/
 var liItemStyle = {
     display: "block",
     cursor: "pointer"
@@ -29,7 +37,9 @@ var counterHeaderStyle = {
     width: "170px",
     textAlign: "center"
 };
+/*********Style End*********/
 
+// Menu
 var Menu = React.createClass({
     getInitialState: function() {
         return {
@@ -123,7 +133,7 @@ var Menu = React.createClass({
             el.selected = false;
             el.marked = false;
         });
-        this.setState({dishes: dishes});
+        this.setState({dishes});
 
         this.props.receiveOrders({sum: sum, finished: false});
     },
@@ -178,9 +188,10 @@ var Menu = React.createClass({
 
 });
 
+// Counter
 var Counter = React.createClass({
     getInitialState: function() {
-        return {orders: []};
+        return {orders: this.props.orders};
     },
 
     manualRender: function() {
@@ -227,10 +238,7 @@ var Counter = React.createClass({
 
     render: function() {
 
-        var orders = store.getState().orders;
-
-        console.log('render counter');
-        console.log(orders);
+        var orders = this.state.orders;
 
         var ordersArr = orders.map(function(order) {
             return (
@@ -245,6 +253,7 @@ var Counter = React.createClass({
                 </ul>
             );
         });
+
 
         return (
             <div>
@@ -275,6 +284,7 @@ var Counter = React.createClass({
     }
 });
 
+// Hall
 var Hall = React.createClass({
 
     getInitialState: function() {
@@ -311,9 +321,11 @@ var Hall = React.createClass({
 
     receiveOrders: function(obj) {
 
-        this.state.orders.unshift(obj);
-        this.setState({orders: this.state.orders});
-        store.dispatch(addOrderUpdate(this.state.orders));
+        var orders = this.state.orders;
+
+        orders.unshift(obj);
+        this.setState({orders: orders});
+        store.dispatch(addOrderUpdate(orders));
 
     },
 
@@ -327,20 +339,20 @@ var Hall = React.createClass({
                 }}>
                     <em>--------- Menu ---------</em>
                 </h3>
-                <Menu receiveOrders={this.receiveOrders.bind(this)}/>
+                <Menu receiveOrders={this.receiveOrders}/>
                 <h3 style={{
                     marginTop: "50px"
                 }}>
                     <em>--------- Counter ---------</em>
                 </h3>
                 <Counter orders={this.state.orders}/>
-
             </div>
         );
     }
 
 });
 
+// Kitcchen
 var Kitchen = React.createClass({
     getInitialState: function() {
         var originalOrders = store.getState();
@@ -358,24 +370,11 @@ var Kitchen = React.createClass({
         this.state.orders[index].finished = true;
         store.dispatch(addOrderUpdate(this.state.orders));
         this.setState({orders: this.state.orders});
-        console.log('from kitchen', store.getState().orders);
     },
 
     render: function() {
         var that = this;
         var orders = this.state.orders;
-
-        if (orders.length === 0) {
-            return (
-                <div>
-                    <h3>No orders now! Please
-                        <Link to="/hall">
-                            go back to order</Link>
-                    </h3>
-                </div>
-            );
-
-        }
 
         var unfinishedOrders = orders.map(function(order, index) {
             if (order.finished) {
@@ -390,6 +389,22 @@ var Kitchen = React.createClass({
                 </ul>
             );
         });
+
+        var isEmpty = unfinishedOrders.every(function(el) {
+            return el === undefined
+        });
+        if (isEmpty) {
+            return (
+                <div>
+                    <h2>kitchen</h2>
+                    <h3>No orders now! Please &nbsp;
+                        <Link to="/hall">
+                            go back to order</Link>
+                    </h3>
+                </div>
+            );
+
+        }
 
         return (
             <div>
@@ -410,7 +425,7 @@ var Restaurant = React.createClass({
     render: function() {
         return (
             <div>
-                <h1></h1>
+                <h1>Welcome to Restaurant :D</h1>
                 <Link to="/hall">Hall</Link>
                 <br/>
                 <Link to="/kitchen">Kitchen</Link>
@@ -445,18 +460,15 @@ function updateOrders(state = initialState, action) {
 // Store
 var store = Redux.createStore(updateOrders);
 
-var unsubscribe = store.subscribe(function() {
-    console.log('subscribe', store.getState().orders);
-});
+// var unsubscribe = store.subscribe(function() {
+//     console.log('subscribe', store.getState().orders);
+// });
 
 var Provider = ReactRedux.Provider;
 
-// ReactDOM.render(
-//     <Provider store={store}>
-//     <Restaurant/>
-// </Provider>, document.getElementById('root'));
-
 /*********Redux End*********/
+
+/*********ReactRouter Start*********/
 
 var routes = <Route path="/" handler={Restaurant}>
     <Route path="hall" handler={Hall}/>
@@ -466,21 +478,8 @@ var routes = <Route path="/" handler={Restaurant}>
 Router.run(routes, function(Handler, routerState) {
     ReactDOM.render(
         <Provider store={store}>
-        <Handler routerState={routerState} store={store}/>
+        <Handler routerState={routerState}/>
     </Provider>, document.body);
 });
 
-// Router.run(routes,function(root){
-//   React.render(<Root />,document.body);
-// });
-
-// ReactDOM.render(
-//   <Hall />,
-//   document.getElementById('hall')
-// );
-//
-//
-// ReactDOM.render(
-//   <Kitchen />,
-//   document.getElementById('kitchen')
-// );
+/*********ReactRouter End*********/
