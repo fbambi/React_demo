@@ -9,30 +9,30 @@
 */
 
 /*********Style Start*********/
-var liItemStyle = {
+const liItemStyle = {
     display: "block",
     cursor: "pointer"
 }
 
-var markedLiItemStyle = {
+const markedLiItemStyle = {
     display: "block",
     cursor: "pointer",
     color: "red"
 }
 
-var ulStyle = {
+const ulStyle = {
     display: "inline-block",
     padding: "0 20px"
 }
 
-var sortStyle = {
+const sortStyle = {
     display: "inline-block",
     margin: "10px",
     fontSize: "8px",
     cursor: "pointer"
 };
 
-var counterHeaderStyle = {
+const counterHeaderStyle = {
     display: "inline-block",
     width: "170px",
     textAlign: "center"
@@ -40,7 +40,7 @@ var counterHeaderStyle = {
 /*********Style End*********/
 
 // Menu
-var Menu = React.createClass({
+let Menu = React.createClass({
     getInitialState: function() {
         return {
             dishes: [
@@ -82,7 +82,7 @@ var Menu = React.createClass({
     },
 
     addSelectedDishes: function() {
-        var dishes = this.state.dishes;
+        let dishes = this.state.dishes;
         dishes.forEach(function(element) {
             if ((!element.selected) && element.marked) {
                 element.selected = true;
@@ -94,7 +94,7 @@ var Menu = React.createClass({
     },
 
     removeSelectedDishes: function() {
-        var dishes = this.state.dishes;
+        let dishes = this.state.dishes;
         dishes.forEach(function(element) {
             if (element.selected && element.marked) {
                 element.selected = false;
@@ -106,7 +106,7 @@ var Menu = React.createClass({
 
     ChangeMarkedDishes: function(index, status) {
 
-        var dishes = this.state.dishes[index];
+        let dishes = this.state.dishes[index];
         dishes.marked = !dishes.marked;
 
         // this.state.dishes.forEach(function(element){
@@ -117,8 +117,8 @@ var Menu = React.createClass({
 
     submitOrders: function() {
 
-        var dishes = this.state.dishes;
-        var sum = 0;
+        let dishes = this.state.dishes;
+        let sum = 0;
 
         dishes.forEach(function(el) {
             if (el.selected) {
@@ -139,9 +139,9 @@ var Menu = React.createClass({
     },
 
     render: function() {
-        var that = this;
+        let that = this;
 
-        var unselectedDishesArr = this.state.dishes.map(function(dishes, index) {
+        let unselectedDishesArr = this.state.dishes.map(function(dishes, index) {
 
             if (dishes.selected) {
                 return;
@@ -154,7 +154,7 @@ var Menu = React.createClass({
             );
         });
 
-        var selectedDishesArr = this.state.dishes.map(function(dishes, index) {
+        let selectedDishesArr = this.state.dishes.map(function(dishes, index) {
             if (!dishes.selected) {
                 return;
             }
@@ -189,7 +189,7 @@ var Menu = React.createClass({
 });
 
 // Counter
-var Counter = React.createClass({
+let Counter = React.createClass({
     getInitialState: function() {
         return {orders: this.props.orders};
     },
@@ -238,9 +238,9 @@ var Counter = React.createClass({
 
     render: function() {
 
-        var orders = this.state.orders;
+        let orders = this.state.orders;
 
-        var ordersArr = orders.map(function(order) {
+        let ordersArr = orders.map(function(order) {
             return (
                 <ul style={{
                     display: "block",
@@ -285,10 +285,10 @@ var Counter = React.createClass({
 });
 
 // Hall
-var Hall = React.createClass({
+let Hall = React.createClass({
 
     getInitialState: function() {
-        var originalOrders = [
+        let originalOrders = [
             {
                 sum: 170,
                 finished: false
@@ -321,7 +321,7 @@ var Hall = React.createClass({
 
     receiveOrders: function(obj) {
 
-        var orders = this.state.orders;
+        let orders = this.state.orders;
 
         orders.unshift(obj);
         this.setState({orders: orders});
@@ -353,9 +353,9 @@ var Hall = React.createClass({
 });
 
 // Kitcchen
-var Kitchen = React.createClass({
+let Kitchen = React.createClass({
     getInitialState: function() {
-        var originalOrders = store.getState();
+        let originalOrders = store.getState();
 
         if ((!originalOrders) || originalOrders.orders.length === 0) {
             return {orders: []}
@@ -373,10 +373,10 @@ var Kitchen = React.createClass({
     },
 
     render: function() {
-        var that = this;
-        var orders = this.state.orders;
+        let that = this;
+        let orders = this.state.orders;
 
-        var unfinishedOrders = orders.map(function(order, index) {
+        let unfinishedOrders = orders.map(function(order, index) {
             if (order.finished) {
                 return;
             }
@@ -390,7 +390,7 @@ var Kitchen = React.createClass({
             );
         });
 
-        var isEmpty = unfinishedOrders.every(function(el) {
+        let isEmpty = unfinishedOrders.every(function(el) {
             return el === undefined
         });
         if (isEmpty) {
@@ -416,12 +416,12 @@ var Kitchen = React.createClass({
 
 });
 
-var Router = ReactRouter;
-var Route = Router.Route;
-var Link = Router.Link;
-var RouteHandler = Router.RouteHandler;
+let Router = ReactRouter;
+let Route = Router.Route;
+let Link = Router.Link;
+let RouteHandler = Router.RouteHandler;
 
-var Restaurant = React.createClass({
+let Restaurant = React.createClass({
     render: function() {
         return (
             <div>
@@ -430,7 +430,6 @@ var Restaurant = React.createClass({
                 <br/>
                 <Link to="/kitchen">Kitchen</Link>
                 <RouteHandler/>
-
             </div>
         );
     }
@@ -444,7 +443,7 @@ function addOrderUpdate(orders) {
 }
 
 // Reducer
-var initialState = {
+const initialState = {
     orders: []
 }
 function updateOrders(state = initialState, action) {
@@ -458,19 +457,19 @@ function updateOrders(state = initialState, action) {
 }
 
 // Store
-var store = Redux.createStore(updateOrders);
+let store = Redux.createStore(updateOrders);
 
-// var unsubscribe = store.subscribe(function() {
+// let unsubscribe = store.subscribe(function() {
 //     console.log('subscribe', store.getState().orders);
 // });
 
-var Provider = ReactRedux.Provider;
+let Provider = ReactRedux.Provider;
 
 /*********Redux End*********/
 
 /*********ReactRouter Start*********/
 
-var routes = <Route path="/" handler={Restaurant}>
+let routes = <Route path="/" handler={Restaurant}>
     <Route path="hall" handler={Hall}/>
     <Route path="kitchen" handler={Kitchen}/>
 </Route>;
