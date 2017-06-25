@@ -81,9 +81,9 @@ let Menu = React.createClass({
         };
     },
 
-    addSelectedDishes: function() {
+    addMarkedDishes: function() {
         let dishes = this.state.dishes;
-        dishes.forEach(function(element) {
+        dishes.forEach(element => {
             if ((!element.selected) && element.marked) {
                 element.selected = true;
                 element.marked = false;
@@ -93,9 +93,9 @@ let Menu = React.createClass({
 
     },
 
-    removeSelectedDishes: function() {
+    removeMarkedDishes: function() {
         let dishes = this.state.dishes;
-        dishes.forEach(function(element) {
+        dishes.forEach(element => {
             if (element.selected && element.marked) {
                 element.selected = false;
                 element.marked = false;
@@ -120,7 +120,7 @@ let Menu = React.createClass({
         let dishes = this.state.dishes;
         let sum = 0;
 
-        dishes.forEach(function(el) {
+        dishes.forEach(el => {
             if (el.selected) {
                 sum += parseInt((Math.random() * (150 - 20) + 20), 10);
             }
@@ -129,7 +129,7 @@ let Menu = React.createClass({
             return;
         }
 
-        dishes.forEach(function(el) {
+        dishes.forEach(el => {
             el.selected = false;
             el.marked = false;
         });
@@ -141,7 +141,7 @@ let Menu = React.createClass({
     render: function() {
         let that = this;
 
-        let unselectedDishesArr = this.state.dishes.map(function(dishes, index) {
+        let unselectedDishesArr = this.state.dishes.map((dishes, index) => {
 
             if (dishes.selected) {
                 return;
@@ -154,7 +154,7 @@ let Menu = React.createClass({
             );
         });
 
-        let selectedDishesArr = this.state.dishes.map(function(dishes, index) {
+        let selectedDishesArr = this.state.dishes.map((dishes, index) => {
             if (!dishes.selected) {
                 return;
             }
@@ -173,10 +173,10 @@ let Menu = React.createClass({
                     <button style={{
                         display: "block",
                         margin: "10px 0"
-                    }} onClick={this.addSelectedDishes}>add →</button>
+                    }} onClick={this.addMarkedDishes}>add →</button>
                     <button style={{
                         display: "block"
-                    }} onClick={this.removeSelectedDishes}>← remove</button>
+                    }} onClick={this.removeMarkedDishes}>← remove</button>
                 </ul>
 
                 <ul style={ulStyle}>{selectedDishesArr}</ul>
@@ -199,21 +199,21 @@ let Counter = React.createClass({
     },
 
     sortSumAsd: function() {
-        this.state.orders.sort(function(a, b) {
+        this.state.orders.sort((a, b) => {
             return a.sum - b.sum;
         });
         this.manualRender();
     },
 
     sortSumDsd: function() {
-        this.state.orders.sort(function(a, b) {
+        this.state.orders.sort((a, b) => {
             return b.sum - a.sum;
         });
         this.manualRender();
     },
 
     sortStatusFinished: function() {
-        this.state.orders.sort(function(a, b) {
+        this.state.orders.sort((a, b) => {
             if (a.finished !== b.finished) {
                 return a.finished
                     ? -1
@@ -225,7 +225,7 @@ let Counter = React.createClass({
     },
 
     sortStatusUnfinished: function() {
-        this.state.orders.sort(function(a, b) {
+        this.state.orders.sort((a, b) => {
             if (a.finished !== b.finished) {
                 return a.finished
                     ? 1
@@ -240,7 +240,7 @@ let Counter = React.createClass({
 
         let orders = this.state.orders;
 
-        let ordersArr = orders.map(function(order) {
+        let ordersArr = orders.map(order => {
             return (
                 <ul style={{
                     display: "block",
@@ -253,7 +253,6 @@ let Counter = React.createClass({
                 </ul>
             );
         });
-
 
         return (
             <div>
@@ -324,7 +323,7 @@ let Hall = React.createClass({
         let orders = this.state.orders;
 
         orders.unshift(obj);
-        this.setState({orders: orders});
+        this.setState({orders});
         store.dispatch(addOrderUpdate(orders));
 
     },
@@ -376,7 +375,7 @@ let Kitchen = React.createClass({
         let that = this;
         let orders = this.state.orders;
 
-        let unfinishedOrders = orders.map(function(order, index) {
+        let unfinishedOrders = orders.map((order, index) => {
             if (order.finished) {
                 return;
             }
@@ -390,7 +389,7 @@ let Kitchen = React.createClass({
             );
         });
 
-        let isEmpty = unfinishedOrders.every(function(el) {
+        let isEmpty = unfinishedOrders.every(el => {
             return el === undefined
         });
         if (isEmpty) {
@@ -403,7 +402,6 @@ let Kitchen = React.createClass({
                     </h3>
                 </div>
             );
-
         }
 
         return (
@@ -439,7 +437,7 @@ let Restaurant = React.createClass({
 
 // Action Creater
 function addOrderUpdate(orders) {
-    return {type: 'update', orders: orders}
+    return {type: 'update', orders}
 }
 
 // Reducer
@@ -474,7 +472,7 @@ let routes = <Route path="/" handler={Restaurant}>
     <Route path="kitchen" handler={Kitchen}/>
 </Route>;
 
-Router.run(routes, function(Handler, routerState) {
+Router.run(routes, (Handler, routerState) => {
     ReactDOM.render(
         <Provider store={store}>
         <Handler routerState={routerState}/>
