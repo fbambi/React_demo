@@ -81,6 +81,7 @@ let Menu = React.createClass({
         };
     },
 
+    // add marked dishes to pre-order area
     addMarkedDishes: function() {
         let dishes = this.state.dishes;
         dishes.forEach(element => {
@@ -90,9 +91,9 @@ let Menu = React.createClass({
             }
         });
         this.setState({'dishes': this.state.dishes});
-
     },
 
+    // remove marked dishes from pre-order area
     removeMarkedDishes: function() {
         let dishes = this.state.dishes;
         dishes.forEach(element => {
@@ -104,31 +105,29 @@ let Menu = React.createClass({
         this.setState({'dishes': this.state.dishes});
     },
 
+    // change dishes status when click
     ChangeMarkedDishes: function(index, status) {
-
         let dishes = this.state.dishes[index];
         dishes.marked = !dishes.marked;
-
-        // this.state.dishes.forEach(function(element){
-        //   console.log(element.name,element.markedUnselected?'marked':'unmarked');
-        // });
         this.setState({dishes: this.state.dishes});
     },
 
+    // submit orders to Hall
     submitOrders: function() {
-
         let dishes = this.state.dishes;
         let sum = 0;
-
         dishes.forEach(el => {
             if (el.selected) {
                 sum += parseInt((Math.random() * (150 - 20) + 20), 10);
             }
         });
+
+        // if no dishes were submit then quit
         if (!sum) {
             return;
         }
 
+        // reset dishes status,including `selected` & `marked`
         dishes.forEach(el => {
             el.selected = false;
             el.marked = false;
@@ -142,7 +141,6 @@ let Menu = React.createClass({
         let that = this;
 
         let unselectedDishesArr = this.state.dishes.map((dishes, index) => {
-
             if (dishes.selected) {
                 return;
             }
@@ -183,9 +181,7 @@ let Menu = React.createClass({
                 <button onClick={this.submitOrders}>submit</button>
             </div>
         );
-
     }
-
 });
 
 // Counter
@@ -214,11 +210,15 @@ let Counter = React.createClass({
 
     sortStatusFinished: function() {
         this.state.orders.sort((a, b) => {
+
+            // if different status then compare status
             if (a.finished !== b.finished) {
                 return a.finished
                     ? -1
                     : 1;
             }
+
+            // or same status then compare sum
             return a.sum - b.sum;
         });
         this.manualRender();
@@ -237,9 +237,7 @@ let Counter = React.createClass({
     },
 
     render: function() {
-
         let orders = this.state.orders;
-
         let ordersArr = orders.map(order => {
             return (
                 <ul style={{
@@ -256,7 +254,6 @@ let Counter = React.createClass({
 
         return (
             <div>
-
                 <ul style={{
                     display: "block",
                     paddingLeft: "100px"
@@ -279,7 +276,6 @@ let Counter = React.createClass({
                 {ordersArr}
             </div>
         );
-
     }
 });
 
@@ -313,19 +309,16 @@ let Hall = React.createClass({
             ? store.getState().orders
             : originalOrders;
 
+        // update orders to store
         store.dispatch(addOrderUpdate(originalOrders));
-
         return {orders: originalOrders};
     },
 
     receiveOrders: function(obj) {
-
         let orders = this.state.orders;
-
         orders.unshift(obj);
         this.setState({orders});
         store.dispatch(addOrderUpdate(orders));
-
     },
 
     render: function() {
@@ -348,24 +341,19 @@ let Hall = React.createClass({
             </div>
         );
     }
-
 });
 
 // Kitcchen
 let Kitchen = React.createClass({
     getInitialState: function() {
         let originalOrders = store.getState();
-
         if ((!originalOrders) || originalOrders.orders.length === 0) {
             return {orders: []}
         }
-
         return {orders: originalOrders.orders}
-
     },
 
     handleCooking: function(index) {
-
         this.state.orders[index].finished = true;
         store.dispatch(addOrderUpdate(this.state.orders));
         this.setState({orders: this.state.orders});
@@ -374,7 +362,6 @@ let Kitchen = React.createClass({
     render: function() {
         let that = this;
         let orders = this.state.orders;
-
         let unfinishedOrders = orders.map((order, index) => {
             if (order.finished) {
                 return;
@@ -411,8 +398,42 @@ let Kitchen = React.createClass({
             </div>
         );
     }
-
 });
+
+/*********Redux Start*********/
+
+// Action Creater
+function addOrderUpdate(orders) {
+    return {type: 'update', orders}
+}
+
+// Reducer
+const initialState = {
+    orders: []
+}
+function updateOrders(state = initialState, action) {
+    switch (action.type) {
+        case 'update':
+            return {
+                orders: [...action.orders]
+            }
+        default:
+            return;
+    }
+}
+
+// Store
+let store = Redux.createStore(updateOrders);
+
+let Provider = ReactRedux.Provider;
+
+// let unsubscribe = store.subscribe(function() {
+//     console.log('subscribe', store.getState().orders);
+// });
+
+/*********Redux End*********/
+
+/*********ReactRouter Start*********/
 
 let Router = ReactRouter;
 let Route = Router.Route;
@@ -432,40 +453,6 @@ let Restaurant = React.createClass({
         );
     }
 });
-
-/*********Redux Start*********/
-
-// Action Creater
-function addOrderUpdate(orders) {
-    return {type: 'update', orders}
-}
-
-// Reducer
-const initialState = {
-    orders: []
-}
-function updateOrders(state = initialState, action) {
-
-    switch (action.type) {
-        case 'update':
-            return {
-                orders: [...action.orders]
-            }
-    }
-}
-
-// Store
-let store = Redux.createStore(updateOrders);
-
-// let unsubscribe = store.subscribe(function() {
-//     console.log('subscribe', store.getState().orders);
-// });
-
-let Provider = ReactRedux.Provider;
-
-/*********Redux End*********/
-
-/*********ReactRouter Start*********/
 
 let routes = <Route path="/" handler={Restaurant}>
     <Route path="hall" handler={Hall}/>
